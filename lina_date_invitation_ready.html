@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Question for Lina ❤️</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family:Arial,Helvetica,sans-serif; overflow:hidden;
+    background:linear-gradient(135deg,#ffd6e7,#fff0f6,#e8d9ff);
+    color:#35152a;
+  }
+  .hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .heart{position:absolute;font-size:22px;animation:float 7s linear infinite;opacity:.65}
+  @keyframes float{from{transform:translateY(110vh) rotate(0deg);opacity:0}
+    15%{opacity:.7}to{transform:translateY(-15vh) rotate(360deg);opacity:0}}
+  .card{
+    width:min(92%,560px); padding:42px 28px; text-align:center; border-radius:28px;
+    background:rgba(255,255,255,.82); backdrop-filter:blur(12px);
+    box-shadow:0 20px 60px rgba(80,25,70,.18); position:relative; z-index:2;
+  }
+  .emoji{font-size:54px}
+  h1{font-size:clamp(27px,7vw,43px);margin:12px 0}
+  p{font-size:18px;line-height:1.6;margin:12px auto;max-width:470px}
+  .name{font-weight:800}
+  .buttons{height:90px;display:flex;justify-content:center;align-items:center;gap:16px;margin-top:20px}
+  button{border:0;border-radius:999px;padding:15px 25px;font-size:17px;font-weight:700;cursor:pointer;transition:.2s}
+  #yes{background:#e83e79;color:white;box-shadow:0 8px 20px rgba(232,62,121,.3)}
+  #yes:hover{transform:scale(1.06)}
+  #no{background:#eee;color:#444;position:relative}
+  .hidden{display:none}
+  .success{animation:pop .55s ease}
+  @keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+  .small{font-size:14px;opacity:.65;margin-top:22px}
+  .date-box{margin:22px auto 0;padding:18px;border-radius:18px;background:#fff1f6}
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+
+<main class="card" id="main">
+  <div class="emoji">💌</div>
+  <h1>Hey, Lina…</h1>
+  <p>There’s something I’ve been wanting to ask you.</p>
+  <p class="name">Kwashie Lina Mawuena Ekua,</p>
+  <p>Would you go on a date with me? ❤️</p>
+
+  <div class="buttons">
+    <button id="yes">YES ❤️</button>
+    <button id="no">NO 😅</button>
+  </div>
+
+  <div class="small">No pressure — just answer honestly 😊</div>
+</main>
+
+<script>
+  // Prevent choosing a date in the past; the browser opens a real calendar picker.
+  const dateInput = document.getElementById('date');
+  if (dateInput) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+  }
+document.getElementById('choiceBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const form = document.getElementById('dateForm');
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      const type = document.getElementById('dateType').value;
+
+      if (!date || !time || !type) {
+        alert('Please choose the date, time, and type of date first ❤️');
+        return;
+      }
+
+      const button = document.getElementById('choiceBtn');
+      button.disabled = true;
+      button.textContent = 'Sending your choice… 💌';
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) throw new Error('Submission failed');
+
+        document.getElementById('chosenDate').textContent =
+          new Date(date + 'T00:00:00').toLocaleDateString(undefined, {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+          });
+        document.getElementById('chosenTime').textContent = time;
+        document.getElementById('chosenType').textContent = type;
+
+        document.getElementById('confirmation').classList.add('show');
+        button.textContent = 'Sent! ❤️';
+      } catch (err) {
+        button.disabled = false;
+        button.textContent = 'That’s my choice 💌';
+        alert('Something went wrong sending your choice. Please try again.');
+      }
+    });
+</script>
+<script>
+const no = document.getElementById("no");
+const yes = document.getElementById("yes");
+const main = document.getElementById("main");
+
+function moveNo(){
+  const pad = 18;
+  const maxX = Math.max(80, window.innerWidth - no.offsetWidth - pad*2);
+  const maxY = Math.max(80, window.innerHeight - no.offsetHeight - pad*2);
+  no.style.position = "fixed";
+  no.style.left = (pad + Math.random()*maxX) + "px";
+  no.style.top = (pad + Math.random()*maxY) + "px";
+  const msgs=["Nice try 😂","That button is shy 👀","Try YES instead ❤️","Almost! 😅","The NO button ran away 🏃"];
+  no.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+}
+no.addEventListener("mouseenter", moveNo);
+no.addEventListener("touchstart", e => {e.preventDefault(); moveNo();});
+no.addEventListener("click", moveNo);
+
+yes.addEventListener("click", ()=>{
+  main.innerHTML = `
+    <div class="success">
+      <div class="emoji">🥰💖🎉</div>
+      <h1>Yaaay!</h1>
+      <p>Kwashie Lina Mawuena Ekua said YES! ❤️</p>
+      <div class="date-box">
+        <strong>Now for the fun part… 💕</strong>
+        <p>Tell me what kind of date you'd enjoy and when you'd like to go.</p>
+
+        <label for="dateType"><strong>What kind of date? 😊</strong></label>
+        <select id="dateType" name="date_type" style="width:100%;padding:13px;margin:10px 0 16px;border:1px solid #f0bfd2;border-radius:12px;font-size:16px;background:white">
+          <option value="">Choose one</option>
+          <option>🍦 Ice cream date</option>
+          <option>🍕 Pizza / food date</option>
+          <option>🎬 Movie date</option>
+          <option>🌅 Beach / sunset date</option>
+          <option>☕ Café date</option>
+          <option>🎮 Games / fun date</option>
+          <option>🚶 Walk & talk date</option>
+          <option>💡 You choose!</option>
+        </select>
+
+        <label for="dateDay"><strong>What day would you like?</strong></label>
+        <input id="dateDay" type="date" style="width:100%;padding:13px;margin:10px 0 16px;border:1px solid #f0bfd2;border-radius:12px;font-size:16px">
+
+        <label for="dateTime"><strong>What time works for you?</strong></label>
+        <input id="dateTime" type="time" style="width:100%;padding:13px;margin:10px 0 16px;border:1px solid #f0bfd2;border-radius:12px;font-size:16px">
+
+        <button id="confirm" style="background:#35152a;color:white;width:100%">That's my choice 💌</button>
+        <p id="choice" style="font-size:16px;font-weight:700"></p>
+      </div>
+      <p class="small">I’m really looking forward to spending time with you. 💕</p>
+    </div>`;
+  for(let i=0;i<35;i++) setTimeout(makeHeart,i*45);
+
+  document.getElementById("confirm").addEventListener("click", ()=>{
+    const type=document.getElementById("dateType").value;
+    const day=document.getElementById("dateDay").value;
+    const time=document.getElementById("dateTime").value;
+    const choice=document.getElementById("choice");
+
+    if(!type || !day || !time){
+      choice.textContent="Please choose the date type, day and time 💕";
+      return;
+    }
+
+    const prettyDay=new Date(day+"T00:00:00").toLocaleDateString(undefined,{
+      weekday:"long",year:"numeric",month:"long",day:"numeric"
+    });
+    const prettyTime=new Date("1970-01-01T"+time).toLocaleTimeString(undefined,{
+      hour:"numeric",minute:"2-digit"
+    });
+
+    choice.innerHTML="Perfect! 🥰<br>"+type+"<br>"+prettyDay+" at "+prettyTime+" ❤️";
+  });
+});
+
+function makeHeart(){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.textContent=["❤️","💕","💖","💗","💘"][Math.floor(Math.random()*5)];
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=(4+Math.random()*5)+"s";
+  h.style.fontSize=(16+Math.random()*22)+"px";
+  document.getElementById("hearts").appendChild(h);
+  setTimeout(()=>h.remove(),9000);
+}
+setInterval(makeHeart,700);
+</script>
+</body>
+</html>
